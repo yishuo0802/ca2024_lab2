@@ -1,4 +1,5 @@
 .globl abs
+# .import ../src/utils.s
 
 .text
 # =================================================================
@@ -20,9 +21,8 @@ abs:
     # Load number from memory
     lw t0 0(a0)
     bge t0, zero, done
-
-    # TODO: Add your own implementation
-
+    sub t0, zero, t0
 done:
     # Epilogue
+    sw t0, 0(a0)
     jr ra
