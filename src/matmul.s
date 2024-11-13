@@ -118,7 +118,22 @@ inner_loop_end:
     # TODO: Add your own implementation
     addi s0, s0, 1
     li t1, 4
-    mul t1, t1, a2
+mul_operation: # t1 = t1 * a2
+    # Prologue
+    li t0, 0 # t0 = 0 (result)
+    mv t2, a2
+    # Body
+    beqz a2, end_mul # Check if a1 is zero
+mul_loop:
+    andi t3, t2, 1         # t2 = a2 & 1
+    beqz t3, skip_add
+    add t0, t0, t1         # t0 += t1
+skip_add:
+    slli t1, t1, 1         # t1 <<= 1
+    srli t2, t2, 1         # a2 >>= 1
+    bnez t2, mul_loop
+end_mul:
+    mv t1, t0              # Move result to t1
     add s3, s3, t1 # incrementing the row on Matrix A
     j outer_loop_start
 
