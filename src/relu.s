@@ -29,6 +29,19 @@ relu:
 
 loop_start:
     # TODO: Add your own implementation
+    beq t1, a1, relu_end      # if t1 == a1, end loop
+    slli t2, t1, 2            # t2 = t1 * 4 (byte offset)
+    add t3, a0, t2            # t3 = address of array[t1]
+    lw t4, 0(t3)              # t4 = array[t1]
+    blt t4, zero, set_zero    # if t4 < 0, set to zero
+    j next
+set_zero:
+    sw zero, 0(t3)            # array[t1] = 0
+next:
+    addi t1, t1, 1            # t1 = t1 + 1
+    j loop_start
+relu_end:
+    ret
 
 error:
     li a0, 36          

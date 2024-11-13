@@ -62,8 +62,19 @@ write_matrix:
     bne a0, t0, fwrite_error
 
     # mul s4, s2, s3   # s4 = total elements
-    # FIXME: Replace 'mul' with your own implementation
+mul_operation:
+    li s4, 0 # s1 = 0 (result)
+    beqz s3, end_mul # Check if s3 is zero
+mul_loop:
+    andi t0, s3, 1         # t0 = s3 & 1
+    beqz t0, skip_add
+    add s4, s4, s2         # s4 += s2
+skip_add:
+    slli s2, s2, 1         # s2 <<= 1
+    srli s3, s3, 1         # s3 >>= 1
+    bnez s3, mul_loop
 
+end_mul:
     # write matrix data to file
     mv a0, s0
     mv a1, s1        # matrix data pointer

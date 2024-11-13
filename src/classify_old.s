@@ -164,9 +164,9 @@ classify:
     sw a5, 20(sp)
     sw a6, 24(sp)
     
-    lw a0, 0(s3)
-    lw a1, 0(s8)
-    jal mul_operation
+    lw t0, 0(s3)
+    lw t1, 0(s8)
+    # mul a0, t0, t1 # FIXME: Replace 'mul' with your own implementation
     slli a0, a0, 2
     jal malloc 
     beq a0, x0, error_malloc
@@ -200,11 +200,12 @@ classify:
     sw a0, 0(sp)
     sw a1, 4(sp)
     
-    lw a0, 0(s3)
-    lw a1, 0(s8)
-    jal mul_operation # mul a1, t0, t1 # length of h array and set it as second argument
-    mv a1, a0 # move length of h array into second argument
     mv a0, s9 # move h to the first argument
+    lw t0, 0(s3)
+    lw t1, 0(s8)
+    # mul a1, t0, t1 # length of h array and set it as second argument
+    # FIXME: Replace 'mul' with your own implementation
+    
     jal relu
     
     lw a0, 0(sp)
@@ -223,9 +224,9 @@ classify:
     sw a5, 20(sp)
     sw a6, 24(sp)
     
-    lw a0, 0(s3)
-    lw a1, 0(s6)
-    jal mul_operation # mul a0, t0, t1 
+    lw t0, 0(s3)
+    lw t1, 0(s6)
+    # mul a0, t0, t1 # FIXME: Replace 'mul' with your own implementation
     slli a0, a0, 2
     jal malloc 
     beq a0, x0, error_malloc
@@ -282,11 +283,12 @@ classify:
     sw a1, 4(sp)
     sw a2, 8(sp)
     
-    lw a0, 0(s3)
-    lw a1, 0(s6)
-    jal mul_operation # load length of array into second arg
-    mv a1, a0
     mv a0, s10 # load o array into first arg
+    lw t0, 0(s3)
+    lw t1, 0(s6)
+    mul a1, t0, t1 # load length of array into second arg
+    # FIXME: Replace 'mul' with your own implementation
+    
     jal argmax
     
     mv t0, a0 # move return value of argmax into t0
@@ -382,21 +384,3 @@ error_args:
 error_malloc:
     li a0, 26
     j exit
-
-mul_operation: # a0 = a0 * a1
-    # Prologue
-    li t0, 0 # t0 = 0 (result)
-    # Body
-    beqz a1, end_mul # Check if a1 is zero
-mul_loop:
-    andi t1, a1, 1         # t1 = a1 & 1
-    beqz t1, skip_add
-    add t0, t0, a0         # t0 += a0
-skip_add:
-    slli a0, a0, 1         # a0 <<= 1
-    srli a1, a1, 1         # a1 >>= 1
-    bnez a1, mul_loop 
-end_mul:
-    mv a0, t0              # Move result to a0
-    # Epilogue
-    jr ra
